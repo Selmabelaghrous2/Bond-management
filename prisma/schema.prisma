@@ -1,0 +1,86 @@
+// Prisma schema — Bond Management
+// Run `npm run prisma:migrate` after setting DATABASE_URL to create the tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AppRole {
+  admin
+  backoffice
+  analyste
+  systeme
+}
+
+enum BondStatus {
+  active
+  suspended
+  matured
+}
+
+enum HistoryUseCase {
+  UC02
+  UC03
+  UC05
+  UC06
+  UC08
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  role         AppRole
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  historyEntries HistoryEntry[]
+
+  @@map("users")
+}
+
+model Bond {
+  id           String     @id @default(cuid())
+  isin         String     @unique
+  name         String
+  /// valeur nominale, en MAD
+  nominal      Decimal    @db.Decimal(18, 2)
+  /// taux facial, en %
+  couponRate   Decimal    @db.Decimal(6, 3)
+  /// paiements de coupon par an (1, 2, 4 ou 12)
+  frequency    Int
+  issueDate    DateTime   @db.Date
+  maturityDate DateTime   @db.Date
+  /// dernier prix de marché connu (% du nominal), null si jamais coté
+  price        Decimal?   @db.Decimal(8, 3)
+  status       BondStatus @default(active)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  historyEntries HistoryEntry[]
+
+  @@map("bonds")
+}
+
+model HistoryEntry {
+  id        String         @id @default(cuid())
+  ucId      HistoryUseCase
+  label     String
+  detail    String
+  timestamp DateTime       @default(now())
+
+  bondId String?
+  bond   Bond?   @relation(fields: [bondId], references: [id], onDelete: SetNull)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("history_entries")
+  @@index([timestamp])
+}

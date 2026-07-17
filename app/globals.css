@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-navy: #0f1f3d;
+  --color-navy-light: #1a3260;
+  --color-brass: #f28c28;
 }
 
 @theme inline {
