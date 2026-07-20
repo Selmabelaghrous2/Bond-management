@@ -1,5 +1,5 @@
-import type { Bond as PrismaBond, HistoryEntry as PrismaHistoryEntry, User as PrismaUser } from "@prisma/client";
-import type { Bond, HistoryEntry } from "@/types/bond";
+import type { Bond as PrismaBond, CashFlow as PrismaCashFlow, HistoryEntry as PrismaHistoryEntry, User as PrismaUser } from "@prisma/client";
+import type { Bond, CashFlow, HistoryEntry } from "@/types/bond";
 import type { AppUser } from "@/types/user";
 import type { AppRole } from "@/types/auth";
 
@@ -19,6 +19,29 @@ export function serializeBond(b: PrismaBond): Bond {
     maturityDate: toISODate(b.maturityDate),
     price: b.price != null ? Number(b.price) : null,
     status: b.status,
+    valueDate: b.valueDate ? toISODate(b.valueDate) : null,
+    valueType: b.valueType,
+    isFloating: b.isFloating,
+    isAmortizing: b.isAmortizing,
+    schedule: b.schedule,
+    comments: b.comments,
+    wgRate: b.wgRate != null ? Number(b.wgRate) : null,
+    ctRate: b.ctRate != null ? Number(b.ctRate) : null,
+    cfgRate: b.cfgRate != null ? Number(b.cfgRate) : null,
+  };
+}
+
+export function serializeCashFlow(c: PrismaCashFlow): CashFlow {
+  return {
+    id: c.id,
+    source: c.source,
+    cashFlowDate: toISODate(c.cashFlowDate),
+    settlementDate: c.settlementDate ? toISODate(c.settlementDate) : null,
+    principal: Number(c.principal),
+    outstanding: c.outstanding != null ? Number(c.outstanding) : null,
+    couponRate: c.couponRate != null ? Number(c.couponRate) : null,
+    grossCoupon: Number(c.grossCoupon),
+    bondId: c.bondId,
   };
 }
 

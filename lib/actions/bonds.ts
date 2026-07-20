@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
+import { getCurrentUserWithProfile, requireRole } from "@/lib/auth";
 import type { BondStatus } from "@/types/bond";
 
 export type BondActionState = { error: string | null };
@@ -178,7 +178,10 @@ export async function logCalculation(bondName: string, summary: string): Promise
 }
 
 export async function logReportGenerated(summary: string): Promise<BondActionState> {
-  const session = await requireRole("backoffice");
+  const session = await getCurrentUserWithProfile();
+  if (session && session.role !== "backoffice" && session.role !== "analyste") {
+    return { error: "Access denied." };
+  }
   if (!session) return { error: "Accès refusé." };
 
   await logHistory({

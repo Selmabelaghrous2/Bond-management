@@ -59,13 +59,69 @@ model Bond {
   maturityDate DateTime   @db.Date
   /// dernier prix de marché connu (% du nominal), null si jamais coté
   price        Decimal?   @db.Decimal(8, 3)
+  valueDate    DateTime?  @db.Date
+  valueType    String?
+  isFloating   Boolean    @default(false)
+  isAmortizing Boolean    @default(false)
+  amortizationDeferral String?
+  schedule     String?
+  comments     String?
+  wgRate       Decimal?   @db.Decimal(8, 6)
+  ctRate       Decimal?   @db.Decimal(8, 6)
+  cfgRate      Decimal?   @db.Decimal(8, 6)
   status       BondStatus @default(active)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
   historyEntries HistoryEntry[]
+  cashFlows      CashFlow[]
 
   @@map("bonds")
+}
+
+model CashFlow {
+  id             String    @id @default(cuid())
+  source         String
+  cashFlowDate   DateTime  @db.Date
+  settlementDate DateTime? @db.Date
+  principal      Decimal   @default(0) @db.Decimal(18, 2)
+  outstanding    Decimal?  @db.Decimal(18, 2)
+  couponRate     Decimal?  @db.Decimal(10, 8)
+  grossCoupon    Decimal   @default(0) @db.Decimal(18, 2)
+  bondId         String?
+  bond           Bond?     @relation(fields: [bondId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+
+  @@unique([source, cashFlowDate])
+  @@index([bondId, cashFlowDate])
+  @@map("cash_flows")
+}
+
+model YieldCurvePoint {
+  id              String    @id @default(cuid())
+  valuationDate   DateTime  @db.Date
+  maturityDate    DateTime  @db.Date
+  daysToMaturity  Int
+  weightedRate    Decimal   @db.Decimal(10, 8)
+  moneyMarketRate Decimal?  @db.Decimal(10, 8)
+  actuarialRate   Decimal?  @db.Decimal(10, 8)
+  createdAt       DateTime  @default(now())
+
+  @@unique([valuationDate, maturityDate])
+  @@map("yield_curve_points")
+}
+
+/// Points de la feuille "Courbe ZC" du fichier Pricer.
+model ZeroCouponCurvePoint {
+  id            String   @id @default(cuid())
+  valuationDate DateTime @db.Date
+  maturityMode  String
+  maturity      Int
+  zeroCouponRate Decimal @db.Decimal(12, 10)
+  createdAt     DateTime @default(now())
+
+  @@unique([valuationDate, maturityMode, maturity])
+  @@map("zero_coupon_curve_points")
 }
 
 model HistoryEntry {

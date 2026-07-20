@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUserWithProfile } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { serializeBond, serializeHistoryEntry } from "@/lib/serializers";
+import { serializeBond, serializeCashFlow, serializeHistoryEntry } from "@/lib/serializers";
 import { BackOfficeApp } from "@/components/BackOfficeApp";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +13,9 @@ export default async function BackOfficePage() {
     redirect("/auth?next=/backoffice");
   }
 
-  const [bonds, history] = await Promise.all([
+  const [bonds, cashFlows, history] = await Promise.all([
     prisma.bond.findMany({ orderBy: { maturityDate: "asc" } }),
+    prisma.cashFlow.findMany({ orderBy: { cashFlowDate: "asc" }, take: 1000 }),
     prisma.historyEntry.findMany({ orderBy: { timestamp: "desc" }, take: 200 }),
   ]);
 
@@ -22,6 +23,7 @@ export default async function BackOfficePage() {
     <BackOfficeApp
       email={session.email}
       bonds={bonds.map(serializeBond)}
+      cashFlows={cashFlows.map(serializeCashFlow)}
       history={history.map(serializeHistoryEntry)}
     />
   );

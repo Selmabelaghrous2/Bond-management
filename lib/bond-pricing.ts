@@ -1,4 +1,4 @@
-import type { Bond } from "@/types/bond";
+import type { CashFlow } from "@/types/bond";
 
 export interface PricingResult {
   /** prix théorique, en % du nominal */
@@ -16,31 +16,20 @@ export interface PricingResult {
  * @param bond obligation à valoriser
  * @param yieldRatePct taux de rendement exigé, en %
  */
-export function priceBond(bond: Bond, yieldRatePct: number): PricingResult {
-  const freq = bond.frequency;
-  const y = yieldRatePct / 100 / freq;
-  const couponPerPeriod = (bond.couponRate / 100 / freq) * 100; // % of nominal per period
-
-  const issue = new Date(bond.issueDate);
-  const maturity = new Date(bond.maturityDate);
-  const now = new Date();
-  const pricingDate = now < issue ? issue : now;
-
-  const yearsRemaining = Math.max(
-    (maturity.getTime() - pricingDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25),
-    0
-  );
-  const periodsRemaining = Math.max(Math.round(yearsRemaining * freq), 1);
+export function priceBond(cashFlows: CashFlow[], yieldRatePct: number): PricingResult {
+  const pricingDate = new Date();
+  const y = yieldRatePct / 100;
 
   let pricePct = 0;
   let weightedTime = 0;
 
-  for (let t = 1; t <= periodsRemaining; t++) {
-    const cashFlow = t === periodsRemaining ? couponPerPeriod + 100 : couponPerPeriod;
-    const discountFactor = Math.pow(1 + y, -t);
-    const pv = cashFlow * discountFactor;
+  for (const flow of cashFlows) {
+    const flowDate = new Date(`${flow.cashFlowDate}T00:00:00Z`);
+    const years = (flowDate.getTime() - pricingDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+    if (years < 0) continue;
+    const pv = (flow.principal + flow.grossCoupon) * Math.pow(1 + y, -years);
     pricePct += pv;
-    weightedTime += (t / freq) * pv;
+    weightedTime += years * pv;
   }
 
   const macaulayDuration = pricePct > 0 ? weightedTime / pricePct : 0;
@@ -48,7 +37,7 @@ export function priceBond(bond: Bond, yieldRatePct: number): PricingResult {
 
   return {
     cleanPricePct: pricePct,
-    price: (pricePct / 100) * bond.nominal,
+    price: pricePct,
     macaulayDuration,
     modifiedDuration,
   };

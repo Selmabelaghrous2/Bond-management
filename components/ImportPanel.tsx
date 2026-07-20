@@ -1,0 +1,3 @@
+export function ImportPanel() {
+  return <div><h2 className="text-lg font-semibold text-gray-900">Importer les fichiers de référence</h2><p className="mt-2 text-sm text-gray-500">Le chargement PostgreSQL est alimenté par les fichiers contrôlés suivants : <code>Pricer - 2026.xlsm</code> (titres, courbe, échéanciers) et <code>CashFlow_5166.csv</code>.</p><div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><p className="font-medium">Import opérationnel</p><p className="mt-1">Déposez les fichiers validés dans le dossier <code>data/</code>, puis lancez <code>npm run db:seed</code>. L’import est idempotent : un flux déjà présent est mis à jour, sans duplication.</p></div></div>;
+}

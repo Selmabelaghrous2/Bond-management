@@ -11,7 +11,10 @@ interface BondsPanelProps {
   bonds: Bond[];
 }
 
-type DraftBond = Omit<Bond, "price">;
+type DraftBond = Omit<
+  Bond,
+  "price" | "valueDate" | "valueType" | "isFloating" | "isAmortizing" | "schedule" | "comments" | "wgRate" | "ctRate" | "cfgRate"
+>;
 
 const EMPTY_DRAFT: DraftBond = {
   id: "",

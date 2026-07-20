@@ -2,15 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { Bond } from "@/types/bond";
+import type { Bond, CashFlow } from "@/types/bond";
 import { priceBond, type PricingResult } from "@/lib/bond-pricing";
 import { logCalculation } from "@/lib/actions/bonds";
 
 interface CalculationsPanelProps {
   bonds: Bond[];
+  cashFlows: CashFlow[];
 }
 
-export function CalculationsPanel({ bonds }: CalculationsPanelProps) {
+export function CalculationsPanel({ bonds, cashFlows }: CalculationsPanelProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedId, setSelectedId] = useState<string>(bonds[0]?.id ?? "");
@@ -24,7 +25,8 @@ export function CalculationsPanel({ bonds }: CalculationsPanelProps) {
     const rate = Number(yieldRate);
     if (!selected || !Number.isFinite(rate)) return;
 
-    const computed = priceBond(selected, rate);
+    if (selected.isin !== "5166" || cashFlows.length === 0) return;
+    const computed = priceBond(cashFlows, rate);
     setResult(computed);
 
     startTransition(async () => {
@@ -82,7 +84,7 @@ export function CalculationsPanel({ bonds }: CalculationsPanelProps) {
         <div className="sm:col-span-2">
           <button
             type="submit"
-            disabled={!selected || isPending}
+            disabled={!selected || selected.isin !== "5166" || cashFlows.length === 0 || isPending}
             className="rounded-md bg-[#f28c28] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e07b12] disabled:cursor-not-allowed disabled:opacity-60"
           >
             Lancer le calcul

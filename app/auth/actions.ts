@@ -9,6 +9,7 @@ import { ROLE_ROUTES, type AppRole } from "@/types/auth";
 
 export type LoginState = {
   error: string | null;
+  redirectTo?: string;
 };
 
 export async function signIn(
@@ -17,11 +18,8 @@ export async function signIn(
 ): Promise<LoginState> {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
-  const selectedRole = String(formData.get("role") || "").trim() as AppRole;
-  const next = String(formData.get("next") || "");
-
-  if (!email || !password || !selectedRole) {
-    return { error: "Email, mot de passe et rôle requis." };
+  if (!email || !password ) {
+    return { error: "Email et mot de passe requis." };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -31,14 +29,17 @@ export async function signIn(
   }
 
   const validPassword = await bcrypt.compare(password, user.passwordHash);
-  if (!validPassword || user.role !== selectedRole) {
-    return { error: "Identifiants invalides pour ce rôle." };
+  if (!validPassword) {
+    return { error: "Identifiants invalides." };
   }
 
   await setSessionUser(user.id);
   revalidatePath("/", "layout");
 
-  redirect(next && next.startsWith("/") ? next : ROLE_ROUTES[user.role as AppRole]);
+  return {
+    error: null,
+    redirectTo: ROLE_ROUTES[user.role as AppRole] ?? "/",
+  };
 }
 
 export async function signOut() {
