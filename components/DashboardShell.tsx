@@ -17,7 +17,7 @@ export function DashboardShell<T extends string>({ area, email, tabs, tab, onTab
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const activeTab = tabs.find((item) => item.id === tab);
 
-  return <div className="min-h-screen bg-slate-100">
+  return <div data-admin-shell={area === "Administrateur" ? "true" : undefined} className="min-h-screen bg-slate-100">
     <aside aria-label={`Navigation ${area}`} onMouseEnter={() => setIsSidebarExpanded(true)} onMouseLeave={() => setIsSidebarExpanded(false)} className={`fixed inset-y-0 left-0 z-40 overflow-hidden bg-[#111c2f] shadow-2xl transition-[width] duration-300 ease-in-out ${isSidebarExpanded ? "w-[304px]" : "w-[76px]"}`}>
       <div className="flex h-full w-[304px] flex-col">
         <div className="flex h-24 items-center border-b border-white/10 px-6"><div className={`whitespace-nowrap transition-opacity duration-200 ${isSidebarExpanded ? "opacity-100" : "opacity-0"}`}><p className="text-sm font-bold tracking-wide text-white">Bond Manager</p><p className="mt-0.5 text-xs text-slate-400">{area}</p></div></div>

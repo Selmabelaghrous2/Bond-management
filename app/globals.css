@@ -40,6 +40,11 @@ body {
 
 .input:focus { border-color: #f28c28; box-shadow: 0 0 0 2px rgb(242 140 40 / 20%); }
 
+/* Interface d'administration : style sobre à angles droits. */
+[data-admin-shell] * {
+  border-radius: 0 !important;
+}
+
 /* Contraste renforcé dans le formulaire CRUD des obligations. */
 .bond-crud-form label,
 .bond-crud-form input,

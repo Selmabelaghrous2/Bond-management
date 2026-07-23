@@ -104,7 +104,7 @@ export function ImportPanel({ existingCount, onImported }: { existingCount: numb
     });
   }
 
-  // The former confirmation area is intentionally unreachable: a compliant file is imported immediately.
+ 
   function runCommit() {}
   function cancelPreview() {}
 

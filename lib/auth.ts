@@ -11,12 +11,6 @@ export type SessionUser = {
 
 const SESSION_COOKIE = "bond_session";
 
-/**
- * Reads the session cookie, verifies its signature, then loads the user's
- * current role from the database. This means a disabled/deleted user or a
- * role change takes effect immediately — nothing sensitive is cached in
- * the cookie itself.
- */
 export async function getCurrentUserWithProfile(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
