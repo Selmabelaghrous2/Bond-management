@@ -4,6 +4,7 @@ export type BondStatus = "active" | "suspended" | "matured";
 export interface Bond {
   id: string;
   isin: string;
+  internalCode: string | null;
   name: string;
   /** valeur nominale, en MAD */
   nominal: number;
@@ -12,7 +13,14 @@ export interface Bond {
   /** paiements de coupon par an */
   frequency: 1 | 2 | 4 | 12;
   issueDate: string; // ISO date (yyyy-mm-dd)
+  enjoymentDate: string | null;
   maturityDate: string; // ISO date (yyyy-mm-dd)
+  revisionDate: string | null;
+  rateType: string | null;
+  revisionPeriod: string | null;
+  repaymentPeriod: string | null;
+  amortizationType: string | null;
+  couponPeriod: string | null;
   /** dernier prix de marché connu (% du nominal), null si jamais coté */
   price: number | null;
   status: BondStatus;
@@ -36,6 +44,8 @@ export interface CashFlow {
   outstanding: number | null;
   couponRate: number | null;
   grossCoupon: number;
+  isPaid: boolean;
+  paidAt: string | null;
   bondId: string | null;
 }
 

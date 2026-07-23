@@ -117,7 +117,7 @@ export function UsersPanel({ users, currentUserId }: { users: AppUser[]; current
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-[#f28c28] focus:ring-2 focus:ring-[#f28c28]/20"
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm text-black outline-none focus:border-[#f28c28] focus:ring-2 focus:ring-[#f28c28]/20"
             />
           </div>
           <div>
@@ -138,7 +138,7 @@ export function UsersPanel({ users, currentUserId }: { users: AppUser[]; current
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as AppRole)}
-              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-[#f28c28] focus:ring-2 focus:ring-[#f28c28]/20"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-black outline-none focus:border-[#f28c28] focus:ring-2 focus:ring-[#f28c28]/20"
             >
               {ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -190,7 +190,7 @@ export function UsersPanel({ users, currentUserId }: { users: AppUser[]; current
                   <select
                     value={u.role}
                     onChange={(e) => changeRole(u.id, e.target.value as AppRole)}
-                    className="rounded-md border border-gray-300 px-2 py-1 text-xs outline-none focus:border-[#f28c28]"
+                    className="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs text-black outline-none focus:border-[#f28c28]"
                   >
                     {ROLES.map((r) => (
                       <option key={r} value={r}>

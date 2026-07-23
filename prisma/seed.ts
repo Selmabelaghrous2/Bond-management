@@ -27,6 +27,10 @@ function frequency(value: string): 1 | 2 | 4 | 12 {
   return value === "Mensuel" ? 12 : value === "Trimestrielle" ? 4 : value === "Semestrielle" ? 2 : 1;
 }
 
+function couponPeriod(value: string): string {
+  return value === "Mensuel" ? "Mensuelle" : value === "Trimestrielle" ? "Trimestrielle" : value === "Semestrielle" ? "Semestrielle" : "Annuelle";
+}
+
 function readPricer(): Pricer {
   if (process.platform !== "win32") throw new Error("L'import du Pricer requiert Windows et Excel installés.");
   const output = execFileSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(process.cwd(), "prisma", "read-pricer.ps1")], { encoding: "utf8", maxBuffer: 25 * 1024 * 1024 });
@@ -58,8 +62,8 @@ async function main() {
     if (!issueDate || !maturityDate || nominal === null || couponRate === null) continue;
     const bond = await prisma.bond.upsert({
       where: { isin: row.code },
-      update: { name: `Titre ${row.code}`, nominal, couponRate, frequency: frequency(row.frequency), issueDate, maturityDate, valueDate: date(row.valueDate), isFloating: row.floating === "Oui", isAmortizing: row.amortizing === "Oui", amortizationDeferral: row.deferral || null, schedule: row.schedule || null, comments: row.comments || null, wgRate: number(row.wg), ctRate: number(row.ct), cfgRate: number(row.cfg), status: maturityDate < new Date() ? "matured" : "active" },
-      create: { isin: row.code, name: `Titre ${row.code}`, nominal, couponRate, frequency: frequency(row.frequency), issueDate, maturityDate, valueDate: date(row.valueDate), isFloating: row.floating === "Oui", isAmortizing: row.amortizing === "Oui", amortizationDeferral: row.deferral || null, schedule: row.schedule || null, comments: row.comments || null, wgRate: number(row.wg), ctRate: number(row.ct), cfgRate: number(row.cfg), status: maturityDate < new Date() ? "matured" : "active" },
+      update: { internalCode: row.code, name: `Titre ${row.code}`, nominal, couponRate, frequency: frequency(row.frequency), issueDate, enjoymentDate: date(row.valueDate), maturityDate, valueDate: date(row.valueDate), rateType: row.floating === "Oui" ? "Révisable" : "Fixe", isFloating: row.floating === "Oui", amortizationType: row.amortizing === "Oui" ? "Amortissable" : "In fine", isAmortizing: row.amortizing === "Oui", couponPeriod: couponPeriod(row.frequency), amortizationDeferral: row.deferral || null, schedule: row.schedule || null, comments: row.comments || null, wgRate: number(row.wg), ctRate: number(row.ct), cfgRate: number(row.cfg), status: maturityDate < new Date() ? "matured" : "active" },
+      create: { isin: row.code, internalCode: row.code, name: `Titre ${row.code}`, nominal, couponRate, frequency: frequency(row.frequency), issueDate, enjoymentDate: date(row.valueDate), maturityDate, valueDate: date(row.valueDate), rateType: row.floating === "Oui" ? "Révisable" : "Fixe", isFloating: row.floating === "Oui", amortizationType: row.amortizing === "Oui" ? "Amortissable" : "In fine", isAmortizing: row.amortizing === "Oui", couponPeriod: couponPeriod(row.frequency), amortizationDeferral: row.deferral || null, schedule: row.schedule || null, comments: row.comments || null, wgRate: number(row.wg), ctRate: number(row.ct), cfgRate: number(row.cfg), status: maturityDate < new Date() ? "matured" : "active" },
     });
     bonds.set(row.code, bond.id);
   }

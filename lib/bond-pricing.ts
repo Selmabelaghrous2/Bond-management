@@ -7,17 +7,16 @@ export interface PricingResult {
   price: number;
   macaulayDuration: number; // years
   modifiedDuration: number; // years
+  dirtyPricePct: number;
+  accruedInterestPct: number;
+  yieldToMaturity: number;
 }
 
 /**
- * Prices a bond by discounting its remaining coupon + principal cash flows
- * at the given required yield, and derives Macaulay / modified duration.
- *
  * @param bond obligation à valoriser
  * @param yieldRatePct taux de rendement exigé, en %
  */
-export function priceBond(cashFlows: CashFlow[], yieldRatePct: number): PricingResult {
-  const pricingDate = new Date();
+export function priceBond(cashFlows: CashFlow[], yieldRatePct: number, pricingDate = new Date()): PricingResult {
   const y = yieldRatePct / 100;
 
   let pricePct = 0;
@@ -40,5 +39,21 @@ export function priceBond(cashFlows: CashFlow[], yieldRatePct: number): PricingR
     price: pricePct,
     macaulayDuration,
     modifiedDuration,
+    dirtyPricePct: pricePct,
+    accruedInterestPct: 0,
+    yieldToMaturity: yieldRatePct,
   };
+}
+
+export function yieldToMaturity(cashFlows: CashFlow[], marketPricePct: number, pricingDate = new Date()): number | null {
+  if (marketPricePct <= 0 || cashFlows.length === 0) return null;
+  let low = -0.99;
+  let high = 1;
+  for (let i = 0; i < 100; i += 1) {
+    const mid = (low + high) / 2;
+    const price = priceBond(cashFlows, mid * 100, pricingDate).dirtyPricePct;
+    if (price > marketPricePct) low = mid;
+    else high = mid;
+  }
+  return ((low + high) / 2) * 100;
 }

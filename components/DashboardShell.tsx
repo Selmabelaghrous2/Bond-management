@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { LogoutButton } from "@/components/LogoutButton";
 
 export type DashboardTab<T extends string> = { id: T; label: string; icon: LucideIcon };
 
@@ -29,7 +30,7 @@ export function DashboardShell<T extends string>({ area, email, tabs, tab, onTab
     </aside>
     <main className="min-h-screen transition-[padding] duration-300 ease-in-out" style={{ paddingLeft: isSidebarExpanded ? "304px" : "76px" }}>
       <header className="border-b border-slate-200 bg-white px-8 py-7"><p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-[#f28c28]">Gestion obligataire</p><div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl font-bold tracking-tight text-[#0f1f3d]">Espace {area}</h1><p className="mt-1 text-sm text-slate-500">Connecté en tant que {email}</p></div><p className="border-l-2 border-[#f28c28] pl-3 text-sm font-semibold text-slate-600">{activeTab?.label}</p></div></header>
-      <div className="p-8"><div className="border border-slate-300 bg-white p-6 shadow-sm">{children}</div></div>
+      <div className="p-8"><div className="mb-3 flex justify-end"><LogoutButton /></div><div className="border border-slate-300 bg-white p-6 shadow-sm">{children}</div></div>
     </main>
   </div>;
 }

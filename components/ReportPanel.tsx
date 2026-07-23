@@ -91,6 +91,18 @@ export function ReportPanel({ bonds }: ReportPanelProps) {
         {isPending ? "Génération…" : "Générer le rapport CSV"}
       </button>
 
+      <section className="mt-8 max-w-3xl rounded-lg border border-gray-200 p-5">
+        <h3 className="font-semibold text-gray-900">Répartition de la valeur de marché</h3>
+        <p className="mb-4 text-sm text-gray-500">Aperçu graphique inclus dans l’analyse destinée au management.</p>
+        <div className="space-y-3">
+          {active.slice(0, 8).map((bond) => {
+            const value = bond.nominal * ((bond.price ?? 100) / 100);
+            const share = totalNominal > 0 ? Math.min(100, value * 100 / totalNominal) : 0;
+            return <div key={bond.id} className="grid grid-cols-[7rem_1fr_5rem] items-center gap-3 text-xs"><span className="font-mono">{bond.isin}</span><div className="h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#f28c28]" style={{ width: `${share}%` }} /></div><span className="text-right">{share.toFixed(1)}%</span></div>;
+          })}
+        </div>
+      </section>
+
       {generatedAt && (
         <p className="mt-3 text-sm text-emerald-700">
           Rapport téléchargé le {new Date(generatedAt).toLocaleString("fr-FR")}.

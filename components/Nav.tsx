@@ -6,16 +6,16 @@ import type { SessionUser } from "@/lib/auth";
 
 export function Nav({ session }: { session: SessionUser | null }) {
   return (
-    <header className="border-b border-gray-200 bg-[#f3f3f3]">
-      <nav className="mx-auto flex h-24 max-w-6xl items-center justify-between px-4">
+    <header className="border-b border-gray-200 bg-[#f0eff1]">
+      <nav className="mx-auto flex h-27 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-1">
           <Image
             src="/Attijariwafa-Banklogo.png"
             alt="Bond Management logo"
-            width={220}
-            height={44}
+            width={600}
+            height={80}
             priority
-            className="h-16 w-auto object-contain"
+            className="h-[8.8rem] w-auto object-contain"
           />
         </Link>
 
@@ -31,14 +31,7 @@ export function Nav({ session }: { session: SessionUser | null }) {
               </Link>
               <LogoutButton />
             </>
-          ) : (
-            <Link
-              href="/auth"
-              className="rounded-md border border-[#f28c28] bg-white px-3 py-1.5 text-xs font-medium text-[#f28c28] transition-colors hover:bg-[#f28c28] hover:text-white"
-            >
-              Se connecter
-            </Link>
-          )}
+          ) : null}
         </div>
       </nav>
     </header>

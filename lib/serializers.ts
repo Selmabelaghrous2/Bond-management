@@ -7,16 +7,25 @@ function toISODate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+
 export function serializeBond(b: PrismaBond): Bond {
   return {
     id: b.id,
     isin: b.isin,
+    internalCode: b.internalCode,
     name: b.name,
     nominal: Number(b.nominal),
     couponRate: Number(b.couponRate),
     frequency: b.frequency as Bond["frequency"],
     issueDate: toISODate(b.issueDate),
+    enjoymentDate: b.enjoymentDate ? toISODate(b.enjoymentDate) : null,
     maturityDate: toISODate(b.maturityDate),
+    revisionDate: b.revisionDate ? toISODate(b.revisionDate) : null,
+    rateType: b.rateType,
+    revisionPeriod: b.revisionPeriod,
+    repaymentPeriod: b.repaymentPeriod,
+    amortizationType: b.amortizationType,
+    couponPeriod: b.couponPeriod,
     price: b.price != null ? Number(b.price) : null,
     status: b.status,
     valueDate: b.valueDate ? toISODate(b.valueDate) : null,
@@ -41,6 +50,8 @@ export function serializeCashFlow(c: PrismaCashFlow): CashFlow {
     outstanding: c.outstanding != null ? Number(c.outstanding) : null,
     couponRate: c.couponRate != null ? Number(c.couponRate) : null,
     grossCoupon: Number(c.grossCoupon),
+    isPaid: c.isPaid,
+    paidAt: c.paidAt ? c.paidAt.toISOString() : null,
     bondId: c.bondId,
   };
 }

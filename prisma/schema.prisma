@@ -48,6 +48,7 @@ model User {
 model Bond {
   id           String     @id @default(cuid())
   isin         String     @unique
+  internalCode String?
   name         String
   /// valeur nominale, en MAD
   nominal      Decimal    @db.Decimal(18, 2)
@@ -56,7 +57,14 @@ model Bond {
   /// paiements de coupon par an (1, 2, 4 ou 12)
   frequency    Int
   issueDate    DateTime   @db.Date
+  enjoymentDate DateTime? @db.Date
   maturityDate DateTime   @db.Date
+  revisionDate DateTime? @db.Date
+  rateType     String?
+  revisionPeriod String?
+  repaymentPeriod String?
+  amortizationType String?
+  couponPeriod String?
   /// dernier prix de marché connu (% du nominal), null si jamais coté
   price        Decimal?   @db.Decimal(8, 3)
   valueDate    DateTime?  @db.Date
@@ -88,6 +96,9 @@ model CashFlow {
   outstanding    Decimal?  @db.Decimal(18, 2)
   couponRate     Decimal?  @db.Decimal(10, 8)
   grossCoupon    Decimal   @default(0) @db.Decimal(18, 2)
+  /// suivi opérationnel : règlement effectivement réalisé par le Back Office
+  isPaid         Boolean   @default(false)
+  paidAt         DateTime?
   bondId         String?
   bond           Bond?     @relation(fields: [bondId], references: [id], onDelete: Cascade)
   createdAt      DateTime  @default(now())
